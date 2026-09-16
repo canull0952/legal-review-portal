@@ -181,6 +181,9 @@ function renderFormFields(){
       }else{
         group.appendChild(input);
       }
+      if(field.default)input.value=field.default;
+      input.addEventListener('input',()=>{state.formData[field.id]=input.value;checkReady();});
+      if(field.default)state.formData[field.id]=field.default;
       container.appendChild(group);
     });
   });
