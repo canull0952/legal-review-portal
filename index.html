@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合同/函件法律审阅平台</title>
+<style>
+:root{--primary:#1a3a5c;--primary-light:#2c5282;--accent:#c5a572;--bg:#f8f9fa;--card-bg:#fff;--text:#2c3e50;--text-light:#6c757d;--border:#dee2e6;--success:#28a745;--warning:#ffc107;--danger:#dc3545;--highlight:#fff3cd;--radius:8px;--shadow:0 2px 8px rgba(0,0,0,.08);--shadow-lg:0 4px 16px rgba(0,0,0,.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Microsoft YaHei','PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);color:#fff;padding:40px 20px;text-align:center;box-shadow:var(--shadow-lg)}
+.header-content h1{font-size:2rem;font-weight:700;margin-bottom:8px}
+.subtitle{font-size:.95rem;opacity:.85}
+.container{max-width:960px;margin:0 auto;padding:32px 20px}
+.step-section{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden}
+.step-header{display:flex;align-items:center;padding:20px 24px;background:linear-gradient(90deg,var(--bg) 0%,var(--card-bg) 100%);border-bottom:2px solid var(--border)}
+.step-number{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--primary);color:#fff;border-radius:50%;font-weight:700;font-size:.95rem;margin-right:12px;flex-shrink:0}
+.step-header h2{font-size:1.2rem;color:var(--primary)}
+.step-body{padding:24px}
+.modules-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:768px){.modules-grid{grid-template-columns:1fr}}
+.module-card{border:1px solid var(--border);border-radius:var(--radius);padding:20px;background:var(--card-bg)}
+.module-title{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.module-title h3{font-size:1.05rem;color:var(--text)}
+.module-badge{font-size:.7rem;padding:2px 8px;border-radius:4px;font-weight:600;color:#fff}
+.module-badge.required{background:var(--danger)}
+.module-badge.optional{background:var(--text-light)}
+.module-desc{font-size:.85rem;color:var(--text-light);margin-bottom:16px}
+.module-hint{font-size:.78rem;color:var(--text-light);margin-bottom:16px;font-style:italic}
+.field-group{margin-bottom:16px}
+.field-label{display:block;font-size:.9rem;font-weight:600;margin-bottom:6px;color:var(--text)}
+.field-required-mark{color:var(--danger);margin-left:2px}
+.field-input,.field-textarea,.field-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;font-family:inherit;transition:border-color .2s,box-shadow .2s}
+.field-with-upload{position:relative}
+.btn-upload-inline{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:6px 14px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-size:.82rem;color:var(--primary);cursor:pointer;transition:background .2s,border-color .2s}
+.btn-upload-inline:hover{background:rgba(44,82,130,.08);border-color:var(--primary-light)}
+.template-file-info{display:none;align-items:center;gap:6px;margin-top:6px;padding:8px 12px;background:rgba(40,167,69,.08);border:1px solid rgba(40,167,69,.2);border-radius:4px;font-size:.82rem}
+.template-file-info.show{display:flex}
+.template-file-info .remove-tpl{margin-left:auto;border:none;background:none;color:var(--danger);cursor:pointer;font-size:1rem;padding:0 4px}
+.field-input:focus,.field-textarea:focus,.field-select:focus{outline:none;border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(44,82,130,.1)}
+.field-textarea{resize:vertical;min-height:72px}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:48px 24px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--primary-light);background:rgba(44,82,130,.03)}
+.upload-icon{font-size:3rem;margin-bottom:12px}
+.upload-text{font-size:1rem;color:var(--text);margin-bottom:6px}
+.upload-link{color:var(--primary-light);text-decoration:underline;font-weight:600}
+.upload-formats{font-size:.8rem;color:var(--text-light)}
+.file-info{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(40,167,69,.08);border:1px solid rgba(40,167,69,.2);border-radius:6px;margin-top:12px}
+.file-icon{font-size:1.2rem}
+.file-name{font-weight:600;color:var(--text)}
+.file-parse-info{font-size:.82rem;color:var(--text-light)}
+.btn-remove-file{margin-left:auto;border:none;background:none;color:var(--danger);cursor:pointer;font-size:1.1rem;padding:4px 8px}
+.btn-remove-file:hover{background:rgba(220,53,69,.1);border-radius:4px}
+.upload-error{margin-top:12px;padding:10px 16px;background:rgba(220,53,69,.08);border:1px solid rgba(220,53,69,.2);border-radius:6px;color:var(--danger);font-size:.88rem}
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 32px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s,transform .1s}
+.btn-primary:hover:not(:disabled){background:var(--primary-light);transform:translateY(-1px)}
+.btn-primary:active:not(:disabled){transform:translateY(0)}
+.btn-primary:disabled{background:var(--text-light);cursor:not-allowed;opacity:.6}
+.btn-large{padding:14px 48px;font-size:1.05rem}
+.btn-hint{font-size:.82rem;color:var(--text-light);margin-top:8px}
+.result-card{border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;background:var(--card-bg)}
+.result-title{font-size:1rem;color:var(--primary);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.revision-count{font-size:.8rem;background:var(--accent);color:#fff;padding:2px 10px;border-radius:12px;font-weight:600}
+.result-content{color:var(--text);line-height:1.8;font-size:.92rem}
+.revisions-list{display:flex;flex-direction:column;gap:12px}
+.revision-item{border-left:4px solid var(--text-light);padding:14px 16px;background:var(--bg);border-radius:0 6px 6px 0}
+.revision-item.severity-high{border-left-color:var(--danger)}
+.revision-item.severity-medium{border-left-color:var(--warning)}
+.revision-item.severity-low{border-left-color:var(--success)}
+.revision-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.revision-index{font-weight:700;color:var(--text)}
+.severity-tag{font-size:.72rem;padding:2px 8px;border-radius:3px;font-weight:600;color:#fff}
+.severity-tag.high{background:var(--danger)}
+.severity-tag.medium{background:var(--warning)}
+.severity-tag.low{background:var(--success)}
+.revision-category{display:inline-block;font-size:.78rem;background:rgba(26,58,92,.08);color:var(--primary);padding:2px 8px;border-radius:3px;margin-bottom:8px}
+.revision-row{margin:6px 0;font-size:.88rem}
+.revision-row strong{display:inline-block;width:48px;color:var(--text-light)}
+.revision-original{background:rgba(220,53,69,.1);padding:2px 6px;border-radius:3px;text-decoration:line-through;text-decoration-color:rgba(220,53,69,.3)}
+.revision-revised{background:rgba(40,167,69,.1);padding:2px 6px;border-radius:3px}
+.revision-suggestion{margin-top:8px;padding:8px 12px;background:var(--card-bg);border-radius:4px;font-size:.86rem;color:var(--text);border:1px solid var(--border)}
+.document-preview{background:var(--bg);padding:20px;border-radius:6px;border:1px solid var(--border);font-size:.88rem;line-height:1.8;max-height:600px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.document-preview mark{background:var(--highlight);padding:2px 4px;border-radius:2px}
+.download-section{text-align:center;padding:20px 0}
+.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999}
+.loading-content{background:#fff;padding:40px 48px;border-radius:var(--radius);text-align:center;box-shadow:var(--shadow-lg)}
+.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.loading-hint{font-size:.82rem;color:var(--text-light)}
+.footer{background:var(--primary);color:rgba(255,255,255,.9);padding:24px 20px;text-align:center;margin-top:40px}
+.footer-warning{font-size:.85rem;margin-bottom:8px;opacity:.9}
+.footer-meta{font-size:.78rem;opacity:.6}
+@media(max-width:768px){.header-content h1{font-size:1.4rem}.container{padding:20px 12px}.step-body{padding:16px}.module-card{padding:16px}.result-card{padding:16px}}
+</style>
+</head>
+<body>
+<header class="header"><div class="header-content"><h1>⚖️ 合同/函件法律审阅平台</h1><p class="subtitle">AI辅助审阅与修订 · 站在我方利益与法理合规双视角</p></div></header>
+<main class="container">
+<section class="step-section" id="step-info"><div class="step-header"><span class="step-number">1</span><h2>审阅信息</h2></div><div class="step-body"><div class="modules-grid">
+<div class="module-card required-module"><div class="module-title"><span class="module-badge required">必填</span><h3>必要信息</h3></div><p class="module-desc">以下信息为必填项，填写完成后方可进行审阅</p><div class="module-fields" id="required-fields"></div></div>
+<div class="module-card optional-module"><div class="module-title"><span class="module-badge optional">选填</span><h3>补充信息</h3></div><p class="module-hint">建议填写，有助于审阅</p><div class="module-fields" id="optional-fields"></div></div>
+</div></div></section>
+<section class="step-section" id="step-upload"><div class="step-header"><span class="step-number">2</span><h2>上传文件</h2></div><div class="step-body">
+<div class="upload-zone" id="upload-zone"><div class="upload-icon">📄</div><p class="upload-text">拖拽文件到此处，或 <span class="upload-link">点击选择文件</span></p><p class="upload-formats">支持 Word (.docx) / PDF (.pdf) / HTML (.html) / 文本 (.txt)</p><input type="file" id="file-input" accept=".docx,.pdf,.html,.htm,.txt" hidden></div>
+<div class="file-info" id="file-info" style="display:none;"><span class="file-icon">📎</span><span class="file-name" id="file-name"></span><span class="file-parse-info" id="file-parse-info"></span><button class="btn-remove-file" id="btn-remove-file">✕</button></div>
+<div class="upload-error" id="upload-error" style="display:none;"></div>
+</div></section>
+<section class="step-section" id="step-review"><div class="step-header"><span class="step-number">3</span><h2>开始审阅</h2></div><div class="step-body"><button class="btn-primary btn-large" id="btn-review" disabled>开始审阅</button><p class="btn-hint" id="review-hint">请先完成必要信息填写并上传文件</p></div></section>
+<section class="step-section" id="step-results" style="display:none;"><div class="step-header"><span class="step-number">4</span><h2>审阅结果</h2></div><div class="step-body">
+<div class="result-card"><h3 class="result-title">📋 格式修订概括</h3><div class="result-content" id="format-summary">—</div></div>
+<div class="result-card"><h3 class="result-title">📊 总体审阅意见</h3><div class="result-content" id="overall-assessment">—</div></div>
+<div class="result-card"><h3 class="result-title">📝 内容修订明细 <span class="revision-count" id="revision-count"></span></h3><div class="revisions-list" id="revisions-list"></div></div>
+<div class="result-card"><h3 class="result-title">👁️ 修订后文档预览</h3><div class="document-preview" id="document-preview"></div></div>
+<div class="download-section"><button class="btn-primary" id="btn-download">⬇️ 下载修订报告 (HTML)</button></div>
+</div></section>
+<div class="loading-overlay" id="loading-overlay" style="display:none;"><div class="loading-content"><div class="spinner"></div><p class="loading-text" id="loading-text">正在审阅，请稍候...</p><p class="loading-hint">长文档可能需要 1-3 分钟</p></div></div>
+</main>
+<footer class="footer"><div class="footer-content"><p class="footer-warning">⚠️ 本平台审阅意见为操作辅助性质，不构成正式法律意见。涉及重大合同或高风险条款，请持证法务复核。</p><p class="footer-meta">AI法律审阅平台 · powered by OpenClaw</p></div></footer>
+
+<script>
+/* ===== 内联模块配置 ===== */
+const MODULES_CONFIG = {"modules":[{"id":"required-info","title":"必要信息","description":"以下信息为必填项，填写完成后方可进行审阅","required":true,"fields":[{"id":"userRole","label":"用户角色","type":"text","placeholder":"如：我方（甲方）是跨国科技公司","required":true},{"id":"scenario","label":"文件需求场景","type":"textarea","placeholder":"如：该文件为我方物流服务采购协议 / 该文件用于递交给海关","required":true},{"id":"jurisdiction","label":"适用国家/地区","type":"text","placeholder":"如：美国、中国大陆、全球通用","required":true},{"id":"reviewDepth","label":"审阅深度与输出形式","type":"select","options":["快速红线扫描（只标重大风险）","逐条审阅（含修改建议）"],"required":true,"default":"逐条审阅（含修改建议）"}]},{"id":"optional-info","title":"补充信息","description":"建议填写，有助于审阅","required":false,"hint":"以下信息非必填，但建议填写以获得更精准的审阅结果","fields":[{"id":"template","label":"参考模版","type":"textarea","placeholder":"公司内部既定模版 / 官方模版 / 此前被官方接受的模版（可描述或后续上传）","required":false},{"id":"counterparty","label":"对方当事人概况","type":"text","placeholder":"如：海外小型物流商 / 大型国企 / 个人","required":false},{"id":"focusPoints","label":"特别关注点","type":"textarea","placeholder":"如：主要看责任限额和违约金 / 重点确认数据跨境条款","required":false}]}]};
+
+/* ===== 配置 ===== */
+const SOPHNET_API_URL='https://www.sophnet.com/api/open-apis/v1/chat/completions';
+const SOPHNET_API_KEY='w9Q3g5…kEw';
+const AI_MODEL='DeepSeek-V4-Pro-0813';
+
+/* ===== CDN 引用 ===== */
+/* mammoth: https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js */
+/* pdf.js: https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js */
+</script>
+
+<!-- CDN: mammoth (Word解析) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<!-- CDN: pdf.js (PDF解析) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+</script>
+
+<script>
+/* ===== 状态 ===== */
+const state={modulesConfig:MODULES_CONFIG,formData:{},documentText:null,filename:null,reviewResult:null,revisedHTML:null};
+const $=(id)=>document.getElementById(id);
+
+/* ===== 初始化 ===== */
+function init(){renderFormFields();bindEvents();checkReady();}
+
+function renderFormFields(){
+  state.modulesConfig.modules.forEach(mod=>{
+    const container=mod.required?$('required-fields'):$('optional-fields');
+    mod.fields.forEach(field=>{
+      const group=document.createElement('div');group.className='field-group';
+      const label=document.createElement('label');label.className='field-label';
+      label.innerHTML=field.label+(field.required?'<span class="field-required-mark">*</span>':'');
+      group.appendChild(label);
+      let input;
+      if(field.type==='textarea'){input=document.createElement('textarea');input.className='field-textarea';input.rows=3;}
+      else if(field.type==='select'){input=document.createElement('select');input.className='field-select';
+        const d=document.createElement('option');d.value='';d.textContent='请选择...';input.appendChild(d);
+        field.options.forEach(o=>{const op=document.createElement('option');op.value=o;op.textContent=o;input.appendChild(op);});
+      }else{input=document.createElement('input');input.type=field.type||'text';input.className='field-input';}
+      input.id='field-'+field.id;
+      if(field.placeholder)input.placeholder=field.placeholder;
+      if(field.id==='template'){
+        const wrap=document.createElement('div');wrap.className='field-with-upload';
+        wrap.appendChild(input);
+        const btn=document.createElement('button');btn.className='btn-upload-inline';btn.type='button';btn.innerHTML='📎 上传模版文件';
+        const tplInput=document.createElement('input');tplInput.type='file';tplInput.accept='.docx,.pdf,.html,.htm,.txt';tplInput.hidden=true;
+        const tplInfo=document.createElement('div');tplInfo.className='template-file-info';
+        tplInfo.innerHTML='<span>📎</span><span class="tpl-name"></span><span class="tpl-parse"></span><button class="remove-tpl" type="button">✕</button>';
+        btn.addEventListener('click',()=>tplInput.click());
+        tplInput.addEventListener('change',()=>{if(tplInput.files.length>0)parseTemplate(tplInput.files[0],tplInfo,input);});
+        tplInfo.querySelector('.remove-tpl').addEventListener('click',()=>{tplInfo.classList.remove('show');input.value='';state.formData.template='';tplInput.value='';});
+        wrap.appendChild(btn);wrap.appendChild(tplInput);wrap.appendChild(tplInfo);
+        group.appendChild(wrap);
+      }else{
+        group.appendChild(input);
+      }
+      container.appendChild(group);
+    });
+  });
+}
+
+function bindEvents(){
+  const uz=$('upload-zone'),fi=$('file-input');
+  uz.addEventListener('click',()=>fi.click());
+  uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dragover');});
+  uz.addEventListener('dragleave',()=>uz.classList.remove('dragover'));
+  uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('dragover');if(e.dataTransfer.files.length>0)handleFile(e.dataTransfer.files[0]);});
+  fi.addEventListener('change',()=>{if(fi.files.length>0)handleFile(fi.files[0]);});
+  $('btn-remove-file').addEventListener('click',removeFile);
+  $('btn-review').addEventListener('click',startReview);
+  $('btn-download').addEventListener('click',downloadRevised);
+}
+
+async function handleFile(file){
+  $('upload-error').style.display='none';
+  $('upload-zone').style.display='none';
+  $('file-info').style.display='flex';
+  $('file-name').textContent=file.name;
+  $('file-parse-info').textContent='| 解析中...';
+  try{
+    const ext=file.name.toLowerCase().split('.').pop();
+    let text='',parseInfo='';
+    if(ext==='docx'){
+      const buf=await file.arrayBuffer();
+      const r=await mammoth.extractRawText({arrayBuffer:buf});
+      text=r.value;parseInfo='Word解析成功，'+text.length+' 字符';
+    }else if(ext==='pdf'){
+      const buf=await file.arrayBuffer();
+      const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+      let pages=[];
+      for(let i=1;i<=pdf.numPages;i++){
+        const page=await pdf.getPage(i);
+        const c=await page.getTextContent();
+        pages.push(c.items.map(it=>it.str).join(' '));
+      }
+      text=pages.join('\n\n');parseInfo='PDF解析成功，'+pdf.numPages+' 页，'+text.length+' 字符';
+    }else if(ext==='html'||ext==='htm'){
+      text=await file.text();
+      const p=new DOMParser();const d=p.parseFromString(text,'text/html');
+      d.querySelectorAll('script,style').forEach(el=>el.remove());
+      text=d.body?d.body.innerText:d.textContent;
+      parseInfo='HTML解析成功，'+text.length+' 字符';
+    }else if(ext==='txt'){
+      text=await file.text();parseInfo='文本读取成功，'+text.length+' 字符';
+    }else{throw new Error('不支持的格式 .'+ext+'，请上传 .docx/.pdf/.html/.txt');}
+    state.documentText=text;state.filename=file.name;
+    $('file-parse-info').textContent='| '+parseInfo;
+    checkReady();
+  }catch(e){showError(e.message);removeFile();}
+}
+
+function removeFile(){
+  state.documentText=null;state.filename=null;
+  $('file-info').style.display='none';
+  $('upload-zone').style.display='block';
+  $('file-input').value='';
+  checkReady();
+}
+function showError(msg){const el=$('upload-error');el.textContent='❌ '+msg;el.style.display='block';}
+
+async function parseTemplate(file,tplInfo,textarea){
+  const ext=file.name.toLowerCase().split('.').pop();
+  let text='';
+  try{
+    if(ext==='docx'){const buf=await file.arrayBuffer();const r=await mammoth.extractRawText({arrayBuffer:buf});text=r.value;}
+    else if(ext==='pdf'){const buf=await file.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf}).promise;let pages=[];for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const c=await page.getTextContent();pages.push(c.items.map(it=>it.str).join(' '));}text=pages.join('\n\n');}
+    else if(ext==='html'||ext==='htm'){text=await file.text();const p=new DOMParser();const d=p.parseFromString(text,'text/html');d.querySelectorAll('script,style').forEach(el=>el.remove());text=d.body?d.body.innerText:d.textContent;}
+    else{text=await file.text();}
+    textarea.value='【已上传模版：'+file.name+'，共'+text.length+'字符】\n\n'+text.substring(0,8000);
+    state.formData.template=textarea.value;
+    tplInfo.classList.add('show');
+    tplInfo.querySelector('.tpl-name').textContent=file.name;
+    tplInfo.querySelector('.tpl-parse').textContent='| '+text.length+' 字符已读取';
+    checkReady();
+  }catch(e){alert('模版解析失败: '+e.message);}
+}
+
+function checkReady(){
+  const rf=state.modulesConfig.modules.filter(m=>m.required).flatMap(m=>m.fields.filter(f=>f.required));
+  const af=rf.every(f=>state.formData[f.id]&&state.formData[f.id].trim());
+  const hf=!!state.documentText;
+  const btn=$('btn-review'),hint=$('review-hint');
+  if(af&&hf){btn.disabled=false;hint.textContent='信息已就绪，可以开始审阅';}
+  else{btn.disabled=true;const m=[];if(!af)m.push('必要信息');if(!hf)m.push('文件上传');hint.textContent='请先完成：'+m.join('、');}
+}
+
+function buildPrompt(fd,docText,fn){
+  const opt=v=>v&&v.trim()?v.trim():'未提供';
+  return '你是一位专业的合同/函件法律审阅专家。请根据以下审阅背景信息，对提供的文档进行审阅与修订。\n\n## 审阅背景信息\n\n- **用户角色**：'+fd.userRole+'\n- **文件需求场景**：'+fd.scenario+'\n- **适用国家/地区**：'+fd.jurisdiction+'\n- **参考模版**：'+opt(fd.template)+'\n- **对方当事人概况**：'+opt(fd.counterparty)+'\n- **特别关注点**：'+opt(fd.focusPoints)+'\n- **审阅深度与输出形式**：'+fd.reviewDepth+'\n- **文件名**：'+(fn||'未提供')+'\n\n## 审阅要求\n\n### 格式修订\n- 仅作字体对齐、字号统一等格式处理建议\n- 不对字体颜色、加粗、斜体、下划线等提出修改\n- 提供一段格式修订概括提示\n\n### 内容修订\n- 站在我方（用户角色）利益与法理合规双视角\n- 针对每处修订，标识原文片段并给出修订后文本\n- 分条说明修订建议和理由\n- 标注严重程度（high/medium/low）和分类\n- 如有特别关注点，重点审阅相关条款\n\n## 输出格式\n\n请严格按照以下JSON格式输出，不要输出任何其他内容：\n\n```json\n{\n  "formatSummary": "格式修订概括说明（一段话）",\n  "contentRevisions": [\n    {\n      "originalText": "需要修订的原文片段",\n      "revisedText": "修订后的文本",\n      "suggestion": "修订建议说明及理由",\n      "category": "分类",\n      "severity": "high/medium/low"\n    }\n  ],\n  "overallAssessment": "总体审阅意见"\n}\n```\n\n## 待审阅文档内容\n\n'+docText+'\n\n---\n\n请基于以上信息进行审阅。注意：本审阅意见为操作辅助性质，不构成正式法律意见。';
+}
+
+async function callAI(prompt){
+  const r=await fetch(SOPHNET_API_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SOPHNET_API_KEY},
+    body:JSON.stringify({model:AI_MODEL,messages:[{role:'system',content:'你是一位专业的合同/函件法律审阅专家，擅长从用户方利益与法理合规双视角审阅各类法律文书。请始终以JSON格式输出审阅结果。'},{role:'user',content:prompt}],max_tokens:65536,temperature:0.3})});
+  if(!r.ok){const t=await r.text();throw new Error('AI API 错误 ('+r.status+'): '+t.substring(0,300));}
+  const d=await r.json();return d.choices[0]?.message?.content||'';
+}
+
+function parseAI(c){
+  try{return JSON.parse(c);}catch(e){}
+  const m1=c.match(/```json\s*([\s\S]*?)```/);if(m1){try{return JSON.parse(m1[1]);}catch(e){}}
+  const m2=c.match(/\{[\s\S]*\}/);if(m2){try{return JSON.parse(m2[0]);}catch(e){}}
+  return{formatSummary:'AI响应解析失败',contentRevisions:[],overallAssessment:c.substring(0,2000)};
+}
+
+async function startReview(){
+  $('loading-overlay').style.display='flex';
+  $('loading-text').textContent='正在审阅，请稍候...';
+  try{
+    const prompt=buildPrompt(state.formData,state.documentText,state.filename);
+    const aiResp=await callAI(prompt);
+    const review=parseAI(aiResp);
+    state.reviewResult=review;
+    state.revisedHTML=genHTML(state.filename,state.formData,review,state.documentText);
+    renderResults(review);
+  }catch(e){alert('审阅失败: '+e.message);}
+  finally{$('loading-overlay').style.display='none';}
+}
+
+function renderResults(review){
+  $('step-results').style.display='block';
+  $('format-summary').textContent=review.formatSummary||'无格式修订建议';
+  $('overall-assessment').textContent=review.overallAssessment||'无';
+  const revs=review.contentRevisions||[];
+  $('revision-count').textContent='共 '+revs.length+' 项';
+  const lel=$('revisions-list');lel.innerHTML='';
+  if(revs.length===0){lel.innerHTML='<p style="color:#6c757d;text-align:center;padding:20px;">无内容修订建议</p>';}
+  else{
+    const sl={high:'高',medium:'中',low:'低'};
+    revs.forEach((rev,i)=>{
+      const sev=rev.severity||'medium';
+      const item=document.createElement('div');item.className='revision-item severity-'+sev;
+      item.innerHTML='<div class="revision-header"><span class="revision-index">修订 '+(i+1)+'</span><span class="severity-tag '+sev+'">'+sl[sev]+'</span></div><div class="revision-category">'+(rev.category||'未分类')+'</div><div class="revision-row"><strong>原文：</strong><span class="revision-original">'+esc(rev.originalText||'').substring(0,300)+'</span></div><div class="revision-row"><strong>修订：</strong><span class="revision-revised">'+esc(rev.revisedText||'').substring(0,300)+'</span></div><div class="revision-suggestion"><strong>建议：</strong>'+esc(rev.suggestion||'')+'</div>';
+      lel.appendChild(item);
+    });
+  }
+  renderDocPreview();
+  $('step-results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderDocPreview(){
+  const p=$('document-preview');
+  let text=state.documentText||'';
+  const revs=state.reviewResult?.contentRevisions||[];
+  revs.forEach((rev,i)=>{
+    if(rev.originalText&&rev.revisedText&&text.includes(rev.originalText)){
+      text=text.replace(rev.originalText,'⟨M'+i+'⟩'+rev.revisedText+'⟨/M'+i+'⟩');
+    }
+  });
+  text=esc(text);
+  revs.forEach((rev,i)=>{
+    text=text.replace(new RegExp('⟨M'+i+'⟩([\\s\\S]*?)⟨/M'+i+'⟩','g'),'<mark>$1</mark>');
+  });
+  text=text.replace(/\n/g,'<br>\n');
+  p.innerHTML=text;
+}
+
+function genHTML(fn,fd,review,origText){
+  const revs=review.contentRevisions||[];
+  const sl={high:'高',medium:'中',low:'低'};
+  const sc={high:'#dc3545',medium:'#ffc107',low:'#28a745'};
+  let rt=esc(origText||'');
+  revs.forEach((rev,i)=>{if(rev.originalText&&rev.revisedText){rt=rt.replace(esc(rev.originalText),'<mark>'+esc(rev.revisedText)+'</mark>');}});
+  rt=rt.replace(/\n/g,'<br>\n');
+  const rh=revs.map((rev,i)=>{const c=sc[rev.severity]||'#6c757d';return '<div style="border-left:4px solid '+c+';padding:12px 16px;margin-bottom:12px;background:#f8f9fa;border-radius:4px;"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><strong>修订 '+(i+1)+'</strong><span style="background:'+c+';color:white;padding:2px 8px;border-radius:3px;font-size:12px;">'+(sl[rev.severity]||'中')+'</span></div><div style="margin-bottom:6px;"><strong>分类：</strong>'+(rev.category||'未分类')+'</div><div style="margin-bottom:6px;"><strong>原文：</strong><span style="background:#f8d7da;padding:2px 4px;border-radius:2px;">'+esc(rev.originalText||'').substring(0,200)+'</span></div><div style="margin-bottom:6px;"><strong>修订：</strong><span style="background:#d4edda;padding:2px 4px;border-radius:2px;">'+esc(rev.revisedText||'').substring(0,200)+'</span></div><div><strong>建议：</strong>'+esc(rev.suggestion||'')+'</div></div>';}).join('\n');
+  return'<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>审阅修订报告 - '+(fn||'文档')+'</title><style>body{font-family:"Microsoft YaHei",sans-serif;max-width:900px;margin:0 auto;padding:40px 20px;color:#2c3e50;line-height:1.8;}h1{color:#1a3a5c;border-bottom:3px solid #c5a572;padding-bottom:10px;}h2{color:#1a3a5c;margin-top:30px;}.meta{background:#f8f9fa;padding:16px;border-radius:6px;margin:16px 0;}mark{background:#fff3cd;padding:2px 4px;border-radius:2px;}.warning{background:#fff3cd;border:1px solid #ffc107;padding:12px;border-radius:4px;margin:16px 0;}</style></head><body><h1>合同/函件审阅修订报告</h1><div class="meta"><div><strong>文件名：</strong>'+(fn||'未提供')+'</div><div><strong>用户角色：</strong>'+(fd.userRole||'')+'</div><div><strong>需求场景：</strong>'+(fd.scenario||'')+'</div><div><strong>适用地区：</strong>'+(fd.jurisdiction||'')+'</div><div><strong>审阅深度：</strong>'+(fd.reviewDepth||'')+'</div><div><strong>审阅时间：</strong>'+new Date().toLocaleString("zh-CN",{timeZone:"Asia/Shanghai"})+'</div></div><div class="warning">⚠️ 本审阅意见为操作辅助性质，不构成正式法律意见。涉及重大合同或高风险条款，请持证法务复核。</div><h2>格式修订概括</h2><p>'+(review.formatSummary||'无')+'</p><h2>总体审阅意见</h2><p>'+(review.overallAssessment||'无')+'</p><h2>内容修订明细（共 '+revs.length+' 项）</h2>'+(rh||'<p>无</p>')+'<h2>修订后文档预览</h2><div style="background:#f8f9fa;padding:20px;border-radius:6px;border:1px solid #dee2e6;">'+rt+'</div><div style="margin-top:40px;text-align:center;color:#999;font-size:12px;">AI法律审阅平台生成 | '+new Date().toISOString()+'</div></body></html>';
+}
+
+function downloadRevised(){
+  if(!state.revisedHTML)return;
+  const blob=new Blob([state.revisedHTML],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  a.download='审阅修订报告_'+(state.filename||'文档')+'_'+new Date().toISOString().slice(0,10)+'.html';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+
+init();
+</script>
+</body>
+</html>
