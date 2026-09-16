@@ -124,7 +124,7 @@ const MODULES_CONFIG = {"modules":[{"id":"required-info","title":"必要信息",
 
 /* ===== 配置 ===== */
 const SOPHNET_API_URL='https://www.sophnet.com/api/open-apis/v1/chat/completions';
-const SOPHNET_API_KEY='w9Q3g5…kEw';
+const SOPHNET_API_KEY='w9Q3g586uQDWURD1IBJ6gjMZTuTLPhx0LyS5ctAc72cfhFSGutYRJIKzHS90plH3xZQPXM3b_mjFdjlKL7-kEw';
 const AI_MODEL='DeepSeek-V4-Pro-0813';
 
 /* ===== CDN 引用 ===== */
@@ -281,9 +281,12 @@ function buildPrompt(fd,docText,fn){
 }
 
 async function callAI(prompt){
-  const r=await fetch(SOPHNET_API_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SOPHNET_API_KEY},
+  const hdrs=new Headers();
+  hdrs.set('Content-Type','application/json');
+  hdrs.set('Authorization','Bearer '+SOPHNET_API_KEY);
+  const r=await fetch(SOPHNET_API_URL,{method:'POST',headers:hdrs,
     body:JSON.stringify({model:AI_MODEL,messages:[{role:'system',content:'你是一位专业的合同/函件法律审阅专家，擅长从用户方利益与法理合规双视角审阅各类法律文书。请始终以JSON格式输出审阅结果。'},{role:'user',content:prompt}],max_tokens:65536,temperature:0.3})});
-  if(!r.ok){const t=await r.text();throw new Error('AI API 错误 ('+r.status+'): '+t.substring(0,300));}
+  if(!r.ok){const t=await r.text();throw new Error('AI API error ('+r.status+'): '+t.substring(0,300));}
   const d=await r.json();return d.choices[0]?.message?.content||'';
 }
 
